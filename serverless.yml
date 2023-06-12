@@ -1,0 +1,52 @@
+service: Proyecto-1
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.8
+  lambdaHashingVersion: 20201221
+  region: us-east-1
+
+custom:
+  customDomain:
+    domainName: apijuan.buo.es
+    stage: dev
+    createRoute53Record: true 
+    
+    # Configuración de los mapeos de las lambdas
+    apiMapping:
+      - path: datos-web
+        method: POST
+        function: S3-texto-2
+      - path: enviar-datos-web
+        method: GET
+        function: API-Lambda-web-2
+
+plugins:
+  - serverless-domain-manager
+  - serverless-certificate-creator
+
+
+functions:
+  S3-texto-2:
+    handler: S3-texto.lambda_handler
+    events:
+      - http:
+          path: datos-web
+          method: POST
+          integration: lambda
+          cors: true
+    role: arn:aws:iam::336247090034:role/role-lambda-ejercicio
+    
+  API-Lambda-web-2:
+    handler: API-Lambda-web.lambda_handler
+    events:
+      - s3:
+          bucket: texto-proyecto-3
+          event: s3:ObjectCreated:*
+      - http:
+          path: enviar-datos-web
+          method: GET
+          integration: lambda
+          cors: true
+    role: arn:aws:iam::336247090034:role/role-lambda-ejercicio
