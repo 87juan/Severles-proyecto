@@ -6,6 +6,9 @@ provider:
   runtime: python3.8
   lambdaHashingVersion: 20201221
   region: us-east-1
+  environment:
+    SES_EMAIL_SENDER_ADDRESS: juan.lopez.de.la.plaza@alumnojoyfe.iepgroup.es
+    SES_RECIPIENT_ADDRESS: juan.lopez.de.la.plaza@alumnojoyfe.iepgroup.es
 
 custom:
   customDomain:
@@ -21,7 +24,6 @@ custom:
       - path: enviar-datos-web
         method: GET
         function: API-Lambda-web-2
-
 plugins:
   - serverless-domain-manager
   - serverless-certificate-creator

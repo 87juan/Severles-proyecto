@@ -2,7 +2,52 @@ import boto3
 import datetime
 
 def lambda_handler(event, context):
-    print(event)
+    ses_client = boto3.client('ses')
+    # Define los detalles del correo electrónico
+    sender = 'juan.lopez.de.la.plaza@alumnojoyfe.iepgroup.es'
+    recipient = 'juan.lopez.de.la.plaza@alumnojoyfe.iepgroup.es'
+    subject = 'Nuevo mensaje en WEB'
+    body = 'Hola, hay un nuevo mensaje en su pagina WEB'
+
+    try:
+        # Verifica el remitente
+        response = ses_client.verify_email_identity(EmailAddress=sender)
+        print(f"Sender {sender} verification initiated")
+    except Exception as e:
+        print(f"Error verifying sender {sender}: {e}")
+        return
+
+    try:
+        # Envía el correo electrónico
+        response = ses_client.send_email(
+            Source=sender,
+            Destination={'ToAddresses': [recipient]},
+            Message={
+                'Subject': {'Data': subject},
+                'Body': {'Text': {'Data': body}}
+            }
+        )
+        print(f"Email sent with MessageId: {response['MessageId']}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+    # Envía el correo electrónico
+    # response = ses_client.send_email(
+    #     Source=sender,
+    #     Destination={
+    #         'ToAddresses': [recipient]
+    #     },
+    #     Message={
+    #         'Subject': {
+    #             'Data': subject
+    #         },
+    #         'Body': {
+    #             'Text': {
+    #                 'Data': body
+    #             }
+    #         }
+    #     }
+    # )
+
     body = event.get('body', {}).get('body')
     print(body)
 
